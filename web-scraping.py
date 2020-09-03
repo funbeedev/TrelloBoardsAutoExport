@@ -120,7 +120,9 @@ def trello():
 
     #get board name from file
     board_name = read_line_from_file("web-scraping-info",3)
-    board_path = '//div[@title="'+board_name+'"]'
+
+    #set xpath to board, translate phrase removes case sensitivity
+    board_path = '//div[@title=translate("'+board_name+'","abcdefghijklmnopqrstuvwxyz","ABCDEFGHIJKLMNOPQRSTUVWXYZ")]' # without checking casing: '//div[@title="nameofboard"]'
 
     #click on board
     action = browser.find_element_by_xpath(board_path)
