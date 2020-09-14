@@ -24,18 +24,26 @@ def setup():
     pass
 
 
-def read_line_from_file(file_name, line_num):
-    
-    #return contents of file at line number
-    file_content = linecache.getline(file_name, line_num)
+def read_data_from_file(file_name, line_num):
+     
+    if line_num == 0:
+        #read all lines in file
+        file_content = linecache.getlines(file_name)
+
+        #remove newline from all lines
+        for n, data in enumerate(file_content):
+            file_content[n] = data.strip('\n')
+
+    else:
+        #read contents of file at line number
+        file_content = linecache.getline(file_name, line_num)
+
+        #remove newline from line
+        file_content = file_content.strip('\n')
 
     #clear cache so can read most recent file next time
     linecache.clearcache 
-
-    #remove new line from end of line
-    file_content = file_content.strip('\n')
-
-    print("line read: %s" %file_content)   
+     
     return file_content
     
 
@@ -92,9 +100,11 @@ def trello():
     browser.get('https://trello.com')
 
     #read file for login info
-    my_email = read_line_from_file("web-scraping-info",1)
-    my_pass = read_line_from_file("web-scraping-info",2)
+    my_email = read_data_from_file("web-scraping-info",1)
+    my_pass = read_data_from_file("web-scraping-info",2)
     
+    print("from file: my_email: %s, my_pass: ***" %my_email)  
+
     #find login
     action = browser.find_element_by_xpath('/html/body/header/nav/div[2]/a[1]')
     action.click()
@@ -122,63 +132,62 @@ def trello():
     boards_url = browser.current_url
     print(boards_url)
 
-    #read file for list of boards, iterate over each 
-    with open("web-scraping-info", 'r') as file:
-        file_data = file.readlines()
-        print("boards to export: %s" %file_data[2:])
+    #read entire file to get list of boards
+    file_data = read_data_from_file("web-scraping-info", 0)
 
-        for line_num, line_data in enumerate(file_data, 1):
+    #remove first 2 items so we only have board info
+    boards_list = file_data[2:]
+    print("from file, boards to export: %s" %boards_list)
 
-            #board list starts from line 3
-            if(line_num >= 3):  
-                
-                #reload board url only after first export
-                if(line_num > 3):
-                    browser.get(boards_url)
-                    #wait for page to load - when create new boards link is present
-                    wait = WebDriverWait(browser, 30)
-                    wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, 'div.board-tile.mod-add')))
+    #iterate over each board 
+    for board_num, board_name in enumerate(boards_list, 1):
 
-                board_name = line_data.strip('\n')
-
-                #set xpath to board, translate phrase removes case sensitivity
-                board_path = '//div[@title=translate("'+board_name+'","abcdefghijklmnopqrstuvwxyz","ABCDEFGHIJKLMNOPQRSTUVWXYZ")]' # without checking casing: '//div[@title="nameofboard"]'
-
-                #click on board
-                action = browser.find_element_by_xpath(board_path)
-                action.click()
-
-                #wait for board to fully load - when 'add another list' is present
-                wait = WebDriverWait(browser, 30)
-                wait.until(EC.presence_of_element_located((By.XPATH, '//span[contains(text(), "Add another list")]'))) 
-
-                #open side menu
-                #TODO prevent error from occuring
-                try:
-                    action = browser.find_element_by_xpath('//span[contains(text(),"Show Menu")]')
-                    action.click()
-                except Exception as print_error:
-                    print("ERROR IGNORED")
-                    print(print_error)
-                    time.sleep(2)
-
-                #select more option
-                action = browser.find_element_by_xpath('//*[@id="content"]/div/div[2]/div/div/div[2]/div/ul[1]/li[5]/a')
-                action.click()
-
-                #print and export
-                action = browser.find_element_by_xpath('//*[@id="content"]/div/div[2]/div/div/div[2]/div/ul[2]/li[4]/a')
-                action.click()
-
-                #export as json
-                action = browser.find_element_by_xpath('//*[@id="chrome-container"]/div[4]/div/div[2]/div/div/div/ul/li[3]/a')
-                action.click()
+        #reload board url only after first export
+        if(board_num > 1):
+            browser.get(boards_url)
             
-                #extract json in page and export to file
-                save_board_as_json(board_name ,browser.page_source)
-        pass      
+            #wait for page to load - when create new boards link is present
+            wait = WebDriverWait(browser, 30)
+            wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, 'div.board-tile.mod-add')))
 
-    pass
+        #set xpath to board, translate phrase removes case sensitivity
+        board_path = '//div[@title=translate("'+board_name+'","abcdefghijklmnopqrstuvwxyz","ABCDEFGHIJKLMNOPQRSTUVWXYZ")]' # without checking casing: '//div[@title="nameofboard"]'
+
+        #click on board
+        action = browser.find_element_by_xpath(board_path)
+        action.click()
+
+        #wait for board to fully load - when 'add another list' is present
+        wait = WebDriverWait(browser, 30)
+        wait.until(EC.presence_of_element_located((By.XPATH, '//span[contains(text(), "Add another list")]'))) 
+
+        #open side menu
+        #TODO prevent error from occuring
+        try:
+            action = browser.find_element_by_xpath('//span[contains(text(),"Show Menu")]')
+            action.click()
+        except Exception as print_error:
+            print("ERROR IGNORED")
+            print(print_error)
+            time.sleep(2)
+
+        #select more option
+        action = browser.find_element_by_xpath('//*[@id="content"]/div/div[2]/div/div/div[2]/div/ul[1]/li[5]/a')
+        action.click()
+
+        #print and export
+        action = browser.find_element_by_xpath('//*[@id="content"]/div/div[2]/div/div/div[2]/div/ul[2]/li[4]/a')
+        action.click()
+
+        #export as json
+        action = browser.find_element_by_xpath('//*[@id="chrome-container"]/div[4]/div/div[2]/div/div/div/ul/li[3]/a')
+        action.click()
+    
+        #extract json in page and export to file
+        save_board_as_json(board_name ,browser.page_source)
+    pass      
+
+pass
 
 
 
