@@ -3,6 +3,7 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.firefox.options import Options
 
 import time
 from datetime import datetime
@@ -20,7 +21,9 @@ def setup():
     
     #set firefox driver
     DRIVER_PATH = './geckodriver'
-    browser = webdriver.Firefox(executable_path=DRIVER_PATH)
+    firefox_options = Options()
+    firefox_options.headless = True
+    browser = webdriver.Firefox(executable_path=DRIVER_PATH, options=firefox_options)
     pass
 
 
