@@ -103,8 +103,8 @@ def trello():
     browser.get('https://trello.com')
 
     #read file for login info
-    my_email = read_data_from_file("web-scraping-info",1)
-    my_pass = read_data_from_file("web-scraping-info",2)
+    my_email = read_data_from_file("trello-boards-info",1)
+    my_pass = read_data_from_file("trello-boards-info",2)
     
     print("from file: my_email: %s, my_pass: ***" %my_email)  
 
@@ -136,7 +136,7 @@ def trello():
     print(boards_url)
 
     #read entire file to get list of boards
-    file_data = read_data_from_file("web-scraping-info", 0)
+    file_data = read_data_from_file("trello-boards-info", 0)
 
     #remove first 2 items so we only have board info
     boards_list = file_data[2:]
