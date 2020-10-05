@@ -3,27 +3,57 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.firefox.options import Options
+from selenium.webdriver.firefox.options import Options as Options_firefox
+from selenium.webdriver.chrome.options import Options as Options_chrome
 
 import time
 from datetime import datetime
 import linecache
 
+script_config_file = "trello-boards-info"
 logs = "web-scraping-log"
 
 def setup():
 
     global browser
 
-    #set chrome driver
-    # DRIVER_PATH = './chromedriver'
-    # browser = webdriver.Chrome(executable_path=DRIVER_PATH)
-    
-    #set firefox driver
-    DRIVER_PATH = './geckodriver'
-    firefox_options = Options()
-    firefox_options.headless = True
-    browser = webdriver.Firefox(executable_path=DRIVER_PATH, options=firefox_options)
+    #first line in file contains config for script
+    settings = read_data_from_file(script_config_file, 1).split(';')
+    #get driver and headless setting, make reading all lower case to avoid caps issues
+    driver_setting = settings[0].lower().split('driver=')[1]
+    headless_setting = settings[1].lower().split('headless=')[1]
+
+    #Configure firefox 
+    if driver_setting == 'firefox':
+        DRIVER_PATH = './geckodriver'
+        firefox_options = Options_firefox()
+        
+        if headless_setting == 'true':
+            firefox_options.headless = True
+        else:
+            firefox_options.headless = False
+
+        browser = webdriver.Firefox(executable_path=DRIVER_PATH, options=firefox_options)
+
+    #Configure chrome 
+    elif driver_setting == "chrome":
+        DRIVER_PATH = './chromedriver'
+        chrome_options = Options_chrome()
+
+        if headless_setting == 'true':
+            chrome_options.add_argument("--headless")
+            #need to add this otherwise will occassionally get error 'element not interactable'
+            chrome_options.add_argument("--window-size=1920,1080")
+        else:
+            chrome_options.add_argument("--None")
+
+        browser = webdriver.Chrome(executable_path=DRIVER_PATH, options=chrome_options)
+
+    else:
+        driver_setting = "unrecognised driver"
+
+    print("Driver = %s, Headless mode = %s" %(driver_setting, headless_setting))
+
     pass
 
 
@@ -103,8 +133,8 @@ def trello():
     browser.get('https://trello.com')
 
     #read file for login info
-    my_email = read_data_from_file("trello-boards-info",1)
-    my_pass = read_data_from_file("trello-boards-info",2)
+    my_email = read_data_from_file(script_config_file,2)
+    my_pass = read_data_from_file(script_config_file,3)
     
     print("from file: my_email: %s, my_pass: ***" %my_email)  
 
@@ -136,10 +166,10 @@ def trello():
     print(boards_url)
 
     #read entire file to get list of boards
-    file_data = read_data_from_file("trello-boards-info", 0)
+    file_data = read_data_from_file(script_config_file, 0)
 
-    #remove first 2 items so we only have board info
-    boards_list = file_data[2:]
+    #remove items so we only have board info
+    boards_list = file_data[3:]
     print("from file, boards to export: %s" %boards_list)
 
     #iterate over each board 
