@@ -11,7 +11,15 @@ from datetime import datetime
 import linecache
 
 script_config_file = "trello-boards-info"
-logs = "web-scraping-log"
+log_file = "trello-scraping-log"
+
+
+def log(print_this):
+    #print to console
+    print(print_this)
+    #print to file
+    print(print_this, file=open(log_file, "a"))
+    pass
 
 def setup():
 
@@ -52,7 +60,7 @@ def setup():
     else:
         driver_setting = "unrecognised driver"
 
-    print("Driver = %s, Headless mode = %s" %(driver_setting, headless_setting))
+    log("Driver = %s, Headless mode = %s" %(driver_setting, headless_setting))
 
     pass
 
@@ -101,7 +109,7 @@ def save_board_as_json(file_name, page_source):
     file.write(page_source_json[0])
     file.close
 
-    print("file exported: %s" %file_name)
+    log("file exported: %s" %file_name)
 
     return 0
 
@@ -136,7 +144,7 @@ def trello():
     my_email = read_data_from_file(script_config_file,2)
     my_pass = read_data_from_file(script_config_file,3)
     
-    print("from file: my_email: %s, my_pass: ***" %my_email)  
+    log("from file: my_email: %s, my_pass: ***" %my_email)  
 
     #find login
     action = browser.find_element_by_xpath('/html/body/header/nav/div[2]/a[1]')
@@ -163,14 +171,13 @@ def trello():
 
     #grab url of boards page
     boards_url = browser.current_url
-    print(boards_url)
 
     #read entire file to get list of boards
     file_data = read_data_from_file(script_config_file, 0)
 
     #remove items so we only have board info
     boards_list = file_data[3:]
-    print("from file, boards to export: %s" %boards_list)
+    log("from file, boards to export: %s" %boards_list)
 
     #iterate over each board 
     for board_num, board_name in enumerate(boards_list, 1):
@@ -200,8 +207,8 @@ def trello():
             action = browser.find_element_by_xpath('//span[contains(text(),"Show Menu")]')
             action.click()
         except Exception as print_error:
-            print("ERROR IGNORED")
-            print(print_error)
+            log("ERROR IGNORED")
+            log(print_error)
             time.sleep(2)
 
         #select more option
@@ -225,7 +232,7 @@ pass
 
 
 def main():
-    print("--- start program ---")
+    log("--- start program ---")
     setup()
     # google()
     trello()
