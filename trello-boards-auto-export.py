@@ -9,9 +9,10 @@ from selenium.webdriver.chrome.options import Options as Options_chrome
 import time
 from datetime import datetime
 import linecache
+import traceback
 
 script_config_file = "trello-boards-info"
-log_file = "trello-scraping-log"
+log_file = "trello-scraping.log"
 
 
 def log(print_this):
@@ -24,6 +25,8 @@ def log(print_this):
 def setup():
 
     global browser
+
+    log("timestamp: %s" %datetime.now())
 
     #first line in file contains config for script
     settings = read_data_from_file(script_config_file, 1).split(';')
@@ -177,7 +180,7 @@ def trello():
 
     #remove items so we only have board info
     boards_list = file_data[3:]
-    log("from file, boards to export: %s" %boards_list)
+    log("from file: boards to export: %s" %boards_list)
 
     #iterate over each board 
     for board_num, board_name in enumerate(boards_list, 1):
@@ -232,12 +235,18 @@ pass
 
 
 def main():
-    log("--- start program ---")
-    setup()
-    # google()
-    trello()
-    close()
-    pass
+
+    try:
+        log("--- start program ---")
+        setup()
+        # google()
+        trello()
+        close()
+    
+    except Exception as print_error:
+        #TODO: how to combine print to file and stderr?
+        traceback.print_exception(type(print_error), print_error, print_error.__traceback__, file=open("trello-scraping.log","a"))
+        traceback.print_exception(type(print_error), print_error, print_error.__traceback__)
 
 
 if __name__ == "__main__":
