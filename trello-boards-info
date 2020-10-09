@@ -1,0 +1,5 @@
+driver=firefox;headless=false
+user@address.com
+mysecretpassword
+BOARDNAME_1
+BOARDNAME_2
