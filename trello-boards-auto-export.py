@@ -106,7 +106,7 @@ def save_board_as_json(file_name, page_source):
 
     #write modified file
     timestamp = datetime.now().strftime("_%d%m%Y")
-    file_name = file_name + timestamp + ".json"
+    file_name = 'board_exports/' + file_name + timestamp + ".json"
 
     file = open(file_name, 'w')
     file.write(page_source_json[0])
