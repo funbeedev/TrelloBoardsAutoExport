@@ -150,7 +150,7 @@ def trello():
     log("from file: my_email: %s, my_pass: ***" %my_email)  
 
     #find login
-    action = browser.find_element_by_xpath('/html/body/header/nav/div[2]/a[1]')
+    action = browser.find_element_by_xpath('/html/body/header/nav/div/a[1]')
     action.click()
 
     #wait for email field
