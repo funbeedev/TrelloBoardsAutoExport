@@ -207,7 +207,7 @@ def trello():
         #open side menu
         #TODO prevent error from occuring
         try:
-            action = browser.find_element_by_xpath('//span[contains(text(),"Show Menu")]')
+            action = browser.find_element_by_xpath('//span[contains(text(),"Show menu")]')
             action.click()
         except Exception as print_error:
             log("ERROR IGNORED")
