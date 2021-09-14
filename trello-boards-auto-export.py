@@ -215,7 +215,7 @@ def trello():
             time.sleep(2)
 
         #select more option
-        action = browser.find_element_by_xpath('//*[@id="content"]/div/div[2]/div/div/div[2]/div/ul[1]/li[5]/a')
+        action = browser.find_element_by_xpath('//*[@id="content"]/div/div[2]/div/div/div[2]/div/ul[1]/li[6]/a')
         action.click()
 
         #print and export
