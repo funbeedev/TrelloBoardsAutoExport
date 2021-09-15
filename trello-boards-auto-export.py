@@ -5,6 +5,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.firefox.options import Options as Options_firefox
 from selenium.webdriver.chrome.options import Options as Options_chrome
+from selenium.common.exceptions import NoSuchElementException
 
 import time
 from datetime import datetime
@@ -195,9 +196,15 @@ def trello():
 
         #set xpath to board, translate phrase removes case sensitivity
         board_path = '//div[@title=translate("'+board_name+'","abcdefghijklmnopqrstuvwxyz","ABCDEFGHIJKLMNOPQRSTUVWXYZ")]' # without checking casing: '//div[@title="nameofboard"]'
-
+            
         #click on board
-        action = browser.find_element_by_xpath(board_path)
+        try:
+            action = browser.find_element_by_xpath(board_path)
+        except NoSuchElementException:
+            #for some reason board titles using lower case can't be handled using translate, So catch exception and use board title as is
+            board_path = '//div[@title="'+board_name+'"]' 
+            action = browser.find_element_by_xpath(board_path)
+            
         action.click()
 
         #wait for board to fully load - when 'add another list' is present
