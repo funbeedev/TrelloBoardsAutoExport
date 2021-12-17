@@ -1,5 +1,5 @@
 # TrelloBoardsAutoExport 
-Export JSON of Trello boards using web scraping.
+Export JSON of [Trello](https://trello.com) boards using web scraping.
 
 ## Contents
 - [Background](#Background)
@@ -11,13 +11,13 @@ Export JSON of Trello boards using web scraping.
 ## Background
 
 ### About Trello
-Trello.com is a website providing a visual organisation platform for lists, notes, projects or anything you want to organise. Trello boards are used to group visuals of your information.
+[Trello.com](https://trello.com) is a website providing a visual organisation platform for lists, notes, projects or anything you want to organise. Trello boards are used to group visuals of your information.
 
 [Browse Trello boards samples to learn more](https://trello.com/templates)
 
 ### Why use this script
 Trello provides a menu option within each board to export the contents in JSON format. These JSON exports can be used as a backup of information contained within each board.
-This script will automatically navigate to each board listed and export the JSON.
+This script will automatically navigate to each board listed and export the JSON.  
 Why this may be helpful for you:
 - It's a handy way to perform a JSON export of all your Trello boards in a single click.
 - You can schedule this script to auto run at scheduled times, acting as an auto backup of your Trello boards (See [AutoSchedule](#AutoSchedule) section).
@@ -86,7 +86,7 @@ BOARDNAME_2_ddmmyyyy.json
 ```
 
 ## AutoSchedule
-This section is optional.
+This section is optional and explains how to configure automated running of the script at a set schedule.
 
 ### Using Crontab Linux utility
 Schedule the time and frequency to run this script. See the [Crontab man page](https://linux.die.net/man/5/crontab).
