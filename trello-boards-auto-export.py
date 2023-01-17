@@ -239,8 +239,16 @@ def trello():
         # export as json
         action = browser.find_element_by_xpath('//*[@id="chrome-container"]/div[4]/div/div[2]/div/div/div/ul/li[3]/a')
         action.click()
+        time.sleep(2)
 
         # extract json in page and export to file
+        #debug
+        # file = open('page_source.txt', 'w', encoding='utf-8')
+        # file.write(browser.page_source)
+        # file.close
+        time.sleep(7)       # temp fix: sometimes the html page with json is slow to load causing errors when exporting as it cant find '{"id"' due to the incorrect html page being exported
+        browser.refresh()   # adding a delay and refreshing helps increase chance of success bit but needs proper fix 
+        
         save_board_as_json(board_name, browser.page_source)
     pass
 
