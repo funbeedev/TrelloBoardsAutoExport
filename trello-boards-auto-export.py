@@ -32,13 +32,17 @@ def setup():
 
     # first line in file contains config for script
     settings = read_data_from_file(script_config_file, 1).split(';')
-    # get driver and headless setting, make reading all lower case to avoid caps issues
+    # get driver, headless & os setting, make reading all lower case to avoid caps issues
     driver_setting = settings[0].lower().split('driver=')[1]
     headless_setting = settings[1].lower().split('headless=')[1]
+    os_setting = settings[2].lower().split('os=')[1]
 
     # Configure firefox
     if driver_setting == 'firefox':
-        DRIVER_PATH = './geckodriver'
+        if(os_setting == 'windows'):
+            DRIVER_PATH = './geckodriver.exe' # Windows gecko driver
+        elif(os_setting == 'linux'):
+            DRIVER_PATH = './geckodriver'     # Linux gecko driver
         firefox_options = Options_firefox()
 
         if headless_setting == 'true':
@@ -159,9 +163,10 @@ def trello():
     wait.until(EC.presence_of_element_located((By.XPATH, '//*[@id="user"]')))
     browser.find_element_by_xpath('//*[@id="user"]').send_keys(my_email)
 
-    # wait for atlassian button
+    # wait for button
     wait = WebDriverWait(browser, 10)
-    wait.until(EC.text_to_be_present_in_element_value((By.ID, 'login'), 'Atlassian'))
+    # wait.until(EC.text_to_be_present_in_element_value((By.ID, 'login'), 'Atlassian'))
+    wait.until(EC.text_to_be_present_in_element_value((By.ID, 'login'), 'Continue'))
     action = browser.find_element_by_xpath('//*[@id="login"]')
     action.click()
 
